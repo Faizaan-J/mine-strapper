@@ -1,3 +1,4 @@
+from pathlib import Path
 import subprocess
 from typing import Callable
 import threading
@@ -10,8 +11,8 @@ from minestrapper.util.get_state_from_line import get_state_from_line
 from time import sleep as wait
 
 class Server:
-    def __init__(self, path: str):
-        self.path : str = path
+    def __init__(self, path: str | Path):
+        self.path : str = (str(path) if isinstance(path, Path) else path)
         self.config_handler : ConfigHandler = ConfigHandler(self.path)
         self.server_state : ServerState = ServerState.STARTING
         self.state_callbacks : dict[ServerState, list[Callable]] = {}
