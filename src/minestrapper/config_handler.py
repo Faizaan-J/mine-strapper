@@ -25,7 +25,7 @@ def dict_to_key_value(dictionary: dict) -> str:
 class ConfigHandler:
     def __init__(self, path: str):
         self.path = path
-        self.config_json = os.path.join(self.path, "/minestrapper/config.json")
+        self.config_json = os.path.join(self.path, "minestrapper", "config.json")
         self.server_properties_file = os.path.join(self.path, "server.properties")
 
     def __open(self, file_type: FileType):

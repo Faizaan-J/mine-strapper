@@ -2,8 +2,8 @@ import subprocess
 from typing import Callable
 import threading
 
-from config_handler import ConfigHandler
-from states import ServerState
+from .config_handler import ConfigHandler
+from .states import ServerState
 
 from minestrapper.util.get_state_from_line import get_state_from_line
 
