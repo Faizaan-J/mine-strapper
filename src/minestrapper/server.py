@@ -17,7 +17,7 @@ class Server:
         self.path : str = (str(path) if isinstance(path, Path) else path)
         self.config_handler : ConfigHandler = ConfigHandler(self.path)
         self.server_state : ServerState = ServerState.STARTING
-        self.state_callbacks : dict[ServerState, list[Callable]] = {}
+        self.state_callbacks : dict[ServerState | None, list[Callable]] = {}
         self.periodic_callbacks : list[Callable] = []
         self.new_line_callbacks : list[Callable] = []
         self.server_process : subprocess.Popen | None = None
@@ -56,7 +56,7 @@ class Server:
         )
 
         return server_process
-    
+
     def start_server(self):
         self.server_process = self.__start_server_process()
 
@@ -81,9 +81,9 @@ class Server:
         self.output_thread = threading.Thread(target=output_loop, daemon=True)
         self.output_thread.start()
 
+
         assert self.server_process is not None
         return self.server_process.wait()
-    
     
     def __on_new_line(self, line : str):
         print(line, end="")
@@ -94,6 +94,10 @@ class Server:
 
             if new_state in self.state_callbacks:
                 for callback in self.state_callbacks[new_state]:
+                    callback()
+
+            if None in self.state_callbacks:
+                for callback in self.state_callbacks[None]:
                     callback()
 
     def on_new_line(self, function: Callable):
@@ -109,12 +113,12 @@ class Server:
 
         return function
     
-    def on_state_change(self, function : Callable, state: ServerState):
+    def on_state_change(self, function : Callable, state: ServerState | None = None):
         def decorator():
-            if self.server_state == state:
+            if state is None or self.server_state == state:
                 function()
 
-        if (not isinstance(state, ServerState)):
+        if (state is not None and not isinstance(state, ServerState)):
             raise NameError(f"State {state} is not a valid server state.")
 
         if state not in self.state_callbacks:
