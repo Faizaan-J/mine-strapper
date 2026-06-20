@@ -10,6 +10,8 @@ from .states import ServerState
 
 from minestrapper.util.get_state_from_line import get_state_from_line
 
+from minestrapper.features.handle_built_in_features import handle_built_in_features
+
 from time import sleep as wait
 
 class Server:
@@ -21,6 +23,8 @@ class Server:
         self.periodic_callbacks : list[Callable] = []
         self.new_line_callbacks : list[Callable] = []
         self.server_process : subprocess.Popen | None = None
+
+        self.printMethod: Callable = print
 
         os.chdir(self.path)
 
@@ -81,12 +85,13 @@ class Server:
         self.output_thread = threading.Thread(target=output_loop, daemon=True)
         self.output_thread.start()
 
+        handle_built_in_features(self)
 
         assert self.server_process is not None
         return self.server_process.wait()
     
     def __on_new_line(self, line : str):
-        print(line, end="")
+        self.printMethod(line, end="")
 
         new_state = get_state_from_line(line)
         if (new_state is not None and new_state != self.server_state):
@@ -124,4 +129,6 @@ class Server:
         if state not in self.state_callbacks:
             self.state_callbacks[state] = []
         self.state_callbacks[state].append(decorator)
+
+        decorator() # Call the function immediately if we're already in the correct state
         return decorator
