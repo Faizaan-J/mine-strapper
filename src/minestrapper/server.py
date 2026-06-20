@@ -3,6 +3,8 @@ import subprocess
 from typing import Callable
 import threading
 
+import os
+
 from .config_handler import ConfigHandler
 from .states import ServerState
 
@@ -19,6 +21,8 @@ class Server:
         self.periodic_callbacks : list[Callable] = []
         self.new_line_callbacks : list[Callable] = []
         self.server_process : subprocess.Popen | None = None
+
+        os.chdir(self.path)
 
     def __start_server_process(self):
         config = self.config_handler.get_config()
