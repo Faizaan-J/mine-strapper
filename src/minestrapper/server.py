@@ -76,6 +76,9 @@ class Server:
        
         self.output_thread = threading.Thread(target=output_loop, daemon=True)
         self.output_thread.start()
+
+        assert self.server_process is not None
+        return self.server_process.wait()
     
     
     def __on_new_line(self, line : str):
