@@ -86,9 +86,10 @@ class Server:
         self.output_thread.start()
 
         handle_built_in_features(self)
-
+    
+    def wait_loop(self):
         assert self.server_process is not None
-        return self.server_process.wait()
+        self.server_process.wait()
     
     def __on_new_line(self, line : str):
         self.printMethod(line, end="")
@@ -104,6 +105,7 @@ class Server:
             if None in self.state_callbacks:
                 for callback in self.state_callbacks[None]:
                     callback()
+
 
     def on_new_line(self, function: Callable):
         self.new_line_callbacks.append(function)
