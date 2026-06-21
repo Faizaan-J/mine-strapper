@@ -24,7 +24,7 @@ class Server:
         self.new_line_callbacks : list[Callable] = []
         self.server_process : subprocess.Popen | None = None
 
-        self.printMethod: Callable = print
+        self.line_transformers: list[Callable[[str], str]] | None = None
 
         os.chdir(self.path)
 
@@ -91,9 +91,14 @@ class Server:
         assert self.server_process is not None
         self.server_process.wait()
     
-    def __on_new_line(self, line : str):
-        self.printMethod(line, end="")
+    def add_line_transformer(self, transformer: Callable[[str], str]):
+        if self.line_transformers is None:
+            self.line_transformers = []
+        self.line_transformers.append(transformer)
 
+        return transformer
+
+    def __on_new_line(self, line : str):
         new_state = get_state_from_line(line)
         if (new_state is not None and new_state != self.server_state):
             self.server_state = new_state
@@ -105,6 +110,13 @@ class Server:
             if None in self.state_callbacks:
                 for callback in self.state_callbacks[None]:
                     callback()
+
+        transformed_line = line
+        if self.line_transformers is not None:
+            for transformer in self.line_transformers:
+                transformed_line = transformer(transformed_line)
+
+        print(transformed_line, end="")
 
         if self.new_line_callbacks:
             for callback in self.new_line_callbacks:
