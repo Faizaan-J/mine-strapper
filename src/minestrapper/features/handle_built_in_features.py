@@ -6,6 +6,7 @@ import ctypes
 from typing import TYPE_CHECKING
 
 from .state_styles.state_styles import StateStyle
+from .server_resource_pack.server_resource_pack import ServerResourcePack
 
 if TYPE_CHECKING:
     from ..server import Server
@@ -14,6 +15,10 @@ FEATURES = {
     "state_styles": {
         "class": StateStyle,
         "enabled_by_default": True
+    },
+    "server_resource_pack": {
+        "class": ServerResourcePack,
+        "enabled_by_default": False
     }
 }
 

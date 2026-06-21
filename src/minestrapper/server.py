@@ -92,7 +92,7 @@ class Server:
 
         # If the server process has stopped, this code should now run.
         self.state_handler.set(ServerState.STOPPED)
-        self.__log_line("Server process has stopped.\n")
+        self.log_line("Server process has stopped.")
         input("Press Enter to exit...")
     
     def add_line_transformer(self, transformer: Callable[[str], str]):
@@ -102,20 +102,21 @@ class Server:
 
         return transformer
 
-    def __log_line(self, line: str):
+    def log_line(self, line: str):
+        line = line.strip("\n")
         transformed_line = line
         if self.line_transformers is not None:
             for transformer in self.line_transformers:
                 transformed_line = transformer(transformed_line)
 
-        print(transformed_line, end="")
+        print(transformed_line)
 
     def __on_new_line(self, line : str):
         new_state = get_state_from_line(line)
         if (new_state is not None and new_state != self.state_handler.get()):
             self.state_handler.set(new_state)
 
-        self.__log_line(line)
+        self.log_line(line)
 
         if self.new_line_callbacks:
             for callback in self.new_line_callbacks:

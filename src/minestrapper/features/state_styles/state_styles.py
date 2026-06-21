@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from ....minestrapper.server import Server
 
 class StateStyle(Feature):
-    def __init__(self, server: "Server", ):
+    def __init__(self, server: "Server"):
         super().__init__("State Styles", "Provides colored text and titles for different server states", server)
         self.state_styles_config = self.server.config_handler.get_config()['features']['state_styles']
         self.styles = self.state_styles_config["styles"]
