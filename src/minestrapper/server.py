@@ -106,6 +106,9 @@ class Server:
                 for callback in self.state_callbacks[None]:
                     callback()
 
+        if self.new_line_callbacks:
+            for callback in self.new_line_callbacks:
+                callback(line)
 
     def on_new_line(self, function: Callable):
         self.new_line_callbacks.append(function)
