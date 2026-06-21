@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Callable
 
 from minestrapper.util.ansi_colors import ANSI_COLORS
-from minestrapper.states import ServerState
+from minestrapper.state_handler import ServerState
 
 if TYPE_CHECKING:
     from ....minestrapper.config_handler import ConfigHandler

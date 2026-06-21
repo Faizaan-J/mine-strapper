@@ -6,7 +6,7 @@ import threading
 import os
 
 from .config_handler import ConfigHandler
-from .states import ServerState
+from .state_handler import ServerState, StateHandler
 
 from minestrapper.util.get_state_from_line import get_state_from_line
 
@@ -18,8 +18,7 @@ class Server:
     def __init__(self, path: str | Path):
         self.path : str = (str(path) if isinstance(path, Path) else path)
         self.config_handler : ConfigHandler = ConfigHandler(self.path)
-        self.server_state : ServerState = ServerState.STARTING
-        self.state_callbacks : dict[ServerState | None, list[Callable]] = {}
+        self.state_handler : StateHandler = StateHandler(ServerState.STARTING)
         self.periodic_callbacks : list[Callable] = []
         self.new_line_callbacks : list[Callable] = []
         self.server_process : subprocess.Popen | None = None
@@ -65,7 +64,7 @@ class Server:
         self.server_process = self.__start_server_process()
 
         def loop():
-            while self.server_state != ServerState.STOPPED and self.server_process is not None and self.server_process.poll() is None:
+            while self.state_handler.get() != ServerState.STOPPED and self.server_process is not None and self.server_process.poll() is None:
                 self.__on_periodic()
 
                 if (self.periodic_callbacks):
@@ -90,6 +89,11 @@ class Server:
     def wait_loop(self):
         assert self.server_process is not None
         self.server_process.wait()
+
+        # If the server process has stopped, this code should now run.
+        self.state_handler.set(ServerState.STOPPED)
+        self.__log_line("Server process has stopped.\n")
+        input("Press Enter to exit...")
     
     def add_line_transformer(self, transformer: Callable[[str], str]):
         if self.line_transformers is None:
@@ -98,25 +102,20 @@ class Server:
 
         return transformer
 
-    def __on_new_line(self, line : str):
-        new_state = get_state_from_line(line)
-        if (new_state is not None and new_state != self.server_state):
-            self.server_state = new_state
-
-            if new_state in self.state_callbacks:
-                for callback in self.state_callbacks[new_state]:
-                    callback()
-
-            if None in self.state_callbacks:
-                for callback in self.state_callbacks[None]:
-                    callback()
-
+    def __log_line(self, line: str):
         transformed_line = line
         if self.line_transformers is not None:
             for transformer in self.line_transformers:
                 transformed_line = transformer(transformed_line)
 
         print(transformed_line, end="")
+
+    def __on_new_line(self, line : str):
+        new_state = get_state_from_line(line)
+        if (new_state is not None and new_state != self.state_handler.get()):
+            self.state_handler.set(new_state)
+
+        self.__log_line(line)
 
         if self.new_line_callbacks:
             for callback in self.new_line_callbacks:
@@ -134,18 +133,3 @@ class Server:
         self.periodic_callbacks.append(function)
 
         return function
-    
-    def on_state_change(self, function : Callable, state: ServerState | None = None):
-        def decorator():
-            if state is None or self.server_state == state:
-                function()
-
-        if (state is not None and not isinstance(state, ServerState)):
-            raise NameError(f"State {state} is not a valid server state.")
-
-        if state not in self.state_callbacks:
-            self.state_callbacks[state] = []
-        self.state_callbacks[state].append(decorator)
-
-        decorator() # Call the function immediately if we're already in the correct state
-        return decorator

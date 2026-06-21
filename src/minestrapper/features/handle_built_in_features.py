@@ -15,11 +15,11 @@ def handle_built_in_features(server: "Server"):
         state_style = StateStyle(server.config_handler)
         @server.add_line_transformer
         def state_styles_transformer(line: str):
-            return state_style.get_colored_text(line, server.server_state)
+            return state_style.get_colored_text(line, server.state_handler.get())
         
-        @server.on_state_change
+        @server.state_handler.on_state_change
         def set_terminal_title():
-            title = state_style.get_title(server.server_state)
+            title = state_style.get_title(server.state_handler.get())
             if (os.name == "nt"):
                 ctypes.windll.kernel32.SetConsoleTitleW(title)
             else:
