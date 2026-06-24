@@ -5,6 +5,8 @@ import threading
 
 import os
 
+from .logger import Logger
+
 from .config_handler import ConfigHandler
 from .state_handler import ServerState, StateHandler
 
@@ -23,7 +25,7 @@ class Server:
         self.new_line_callbacks : list[Callable] = []
         self.server_process : subprocess.Popen | None = None
 
-        self.line_transformers: list[Callable[[str], str]] | None = None
+        self.logger = Logger(self)
 
         os.chdir(self.path)
 
@@ -79,11 +81,12 @@ class Server:
             assert self.server_process is not None
             if (self.server_process.stdout is not None):
                 for line in self.server_process.stdout:
-                    self.__on_new_line(line)
+                    self.__on_new_line(line.strip("\n"))
        
         self.output_thread = threading.Thread(target=output_loop, daemon=True)
         self.output_thread.start()
 
+        self.logger.info("Server process started successfully.")
         handle_built_in_features(self)
     
     def wait_loop(self):
@@ -92,31 +95,16 @@ class Server:
 
         # If the server process has stopped, this code should now run.
         self.state_handler.set(ServerState.STOPPED)
-        self.log_line("Server process has stopped.")
+        self.logger.info("Server process has stopped.")
+        self.logger.publish_minestrapper_log()
         input("Press Enter to exit...")
-    
-    def add_line_transformer(self, transformer: Callable[[str], str]):
-        if self.line_transformers is None:
-            self.line_transformers = []
-        self.line_transformers.append(transformer)
-
-        return transformer
-
-    def log_line(self, line: str):
-        line = line.strip("\n")
-        transformed_line = line
-        if self.line_transformers is not None:
-            for transformer in self.line_transformers:
-                transformed_line = transformer(transformed_line)
-
-        print(transformed_line)
 
     def __on_new_line(self, line : str):
         new_state = get_state_from_line(line)
         if (new_state is not None and new_state != self.state_handler.get()):
             self.state_handler.set(new_state)
 
-        self.log_line(line)
+        self.logger.forwarded_log(line)
 
         if self.new_line_callbacks:
             for callback in self.new_line_callbacks:

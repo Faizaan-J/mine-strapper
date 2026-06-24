@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 class StateStyle(Feature):
     def __init__(self, server: "Server"):
-        super().__init__("State Styles", "Provides colored text and titles for different server states", server)
+        super().__init__("State Styles", "Provider for colored text and titles based on different server states", server)
         self.state_styles_config = self.server.config_handler.get_config()['features']['state_styles']
         self.styles = self.state_styles_config["styles"]
         self.title_enabled = self.state_styles_config.get("title_enabled", False)
@@ -44,7 +44,7 @@ class StateStyle(Feature):
     
     def run(self):
         if (self.color_enabled):
-            @self.server.add_line_transformer
+            @self.server.logger.add_line_transformer
             def state_styles_transformer(line: str):
                 return self.get_colored_text(line, self.server.state_handler.get())
         
