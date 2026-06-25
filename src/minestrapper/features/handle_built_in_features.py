@@ -26,10 +26,12 @@ def handle_built_in_features(server: "Server"):
         if target_feature is None: continue
 
         if target_feature.get("feature_enabled", feature_info["enabled_by_default"]):
-            feature_class = feature_info["class"]
-            feature_instance = feature_class(server)
-            server.logger.info(f"Feature '{feature_instance.name}' has been started.")
+            feature_name = feature_info["class"].__name__
             try:
+                feature_class = feature_info["class"]
+                feature_instance = feature_class(server)
+                feature_name = feature_instance.name
                 feature_instance.run()
+                server.logger.info(f"Feature '{feature_instance.name}' has been started.")
             except Exception as e:
-                server.logger.error(f"An error occurred while running the feature '{feature_instance.name}': {e}")
+                server.logger.error(f"An error occurred while running the feature '{feature_name}': {e}")
