@@ -6,46 +6,107 @@
 
 Instead of writing full Java plugins or mods, this lets you hook into the server’s state/lifecycle events (starting, running, idle, stopping, stopped) and add custom functionality directly in Python. 
 This means simple features you want to add don't require the overhead of a mod loader (fabric, forge) or a plugin loader (paper, spigot, bukkit) and you can keep the server in its vanilla form.
+
 Of course, you can still definitely use your favorite mods or plugins along with this if you'd like.
 
 ## Current Features
-- Console Styling: Updates the server title and color based on the server's current state.
-- State Manager: A script that manages and stores the state of the server (starting, running, idle, stopping, stopped) and has an event system for other scripts to detect state changes 
-- Sneaky Bans: An example of how you can extend the server with custom features. Instead of banning players in the usual way (which makes it obvious),
-  when they join, they get kicked with a fake error message (e.g., “Connection timed out: getsockopt”). Perfect for keeping out that one person who thinks
-  that they got away with X-raying.
-- A Logger: A script that has a function that prints out messages in a similar style to Minecraft console commands. For example, a Minecraft log may look like this: `[18:06:09] [Server thread/INFO]: Preparing level "world"`. The logger mimics this style and looks something like this: `[18:05:56] [MineStrapper/INFO] Test Message!`.
-- Resource Pack Server: A small built-in HTTP server to host a server resource pack without an external site.
+- Config Handling
+  - Contains a class for managing configuration files of both Minestrapper and Minecraft.
+  - Minestrapper config uses a file named `Config.json` in a `/minestrapper` directory relative to the root of the Minecraft Server.
+  - Allows for direct editing of `server.properties`.
+- State Handling
+  - Contains a class for getting the current state of the server based on the server output.
+  - Tracks the following states: `STARTING`, `RUNNING`, `PAUSED`, `STOPPING`, `STOPPED`.
+- Periodic Callbacks
+  - A lifecycle function that runs every 20ms.
+  - Used for things that need to happen constantly.
+  - Mainly isn't used in preference of lifecycle events.
+- New Line Callbacks
+  - A lifecycle function that runs everytime a new line is sent from the Minecraft Server process
+- Logger
+  - Prints out stuff both from forwarding logs from the Minecraft process and also custom logs from Minestrapper.
+  - Keeps Minestrapper specific logs visually consistent with Minecraft Server logs (e.g. "[19:48:06] [Minestrapper/INFO]: Initialized Minestrapper Logger successfully.")
+  - Logs to a file named `latest-minestrapper.log` and then replaces the vanilla `latest.log` with it when the server stops.
+  - Provides `transformers` to modify each logged line to the output as needed. 
+- Built-in features:
+  - "State Styles"
+    - Updates the terminal title and text color based on the server's current state.
+    - Makes it easier to see whether the server is starting, running, paused, stopping, or stopped.
+  - "Server Resource Pack"
+    - Includes a lightweight HTTP server for serving a server resource pack.
+    - Removes the need for an external hosting site for the pack.
+    - Keeps resource pack delivery self-contained within the server setup.
 
-## Future Features
-- Google Drive Integration: Let the owner log into their google account to allow the world file to be saved on the cloud when the server stops along with being able to have past backups of the world.
-- Local Automated Backups: Sometimes you just want to keep it simple and store world backups locally rather than in a cloud service. You have the choice to do local, cloud, or even both.  
+## Potential Future Features
+- Backups: Let the owner integrate save backups everytime the server closes locally. It can either be done locally only, with cloud services, or even both.
 - Remote Panels: Allow the owner along with anyone else authorized to remotely turn on and off the server. Only the owner will be able to view logs and run commands however.
-- Player Event Hooks: Right now, there are only events/hooks for the server state and lifecycle. There are plans to extend this even more for player events such as joining, leaving, chatting, death, and more.
-- Custom Commands: Add your own admin commands that can trigger multiple Minecraft commands or even run Python code. Still being thought out as there are challenges around handling unregistered commands and whether these should integrate with datapacks or stay console-only.
+- Custom Commands: Add your own admin commands that can trigger multiple Minecraft commands or even run Python code.
 
 ## Installation Guide
-There currently is no proper installer but this is temporary:
-1. Install python at [https://www.python.org/](https://www.python.org/).
-2. Download from releases.
-3. Move core into `%LOCALAPPDATA%\Programs\MineStrapper` or wherever you like.
-4. Open a terminal inside of the core folder and create a python environment:
+1. Install Python at [https://www.python.org/](https://www.python.org/) (>=3.1).
+2. Go to your Minecraft Server directory.
+3. Make a directory exactly named `minestrapper` and change directory to it.
+```
+mkdir minestrapper && cd minestrapper
+```
+
+4. Make a new Python environment.
+
+**Windows:**
 ```
 python -m venv .venv
 ```
-5. Then after it's done, activate the environment:
+
+**MacOS / Linux:**
 ```
-.\.venv\Scripts\Activate
+python3 -m venv .venv
 ```
-6. Lastly, download the packages:
+
+5. Activate the environment.
+
+**Windows:**
 ```
-pip install -r requirements.txt
+.\.venv\Scripts\activate
 ```
-7. Inside of the root of your Minecraft server, paste the folder `server/minestrapper` into it and paste the file `server/Start.bat`
-8. Configure `minestrapper/Config.json` and set `server/jar_name` to the name of your jar file.
-9. Edit the `Start.bat` if you placed the core somewhere else or named the environment differently.
-10. To run the server, run the `.bat` file.
+
+**MacOS / Linux:**
+```
+source .venv/bin/activate
+```
+
+6. Install the `minestrapper` package.
+```
+pip install minestrapper
+```
+
+7. Create a file exactly named `Config.json` and edit to your liking.
+```json
+{
+  "$schema": "https://raw.githubusercontent.com/Faizaan-J/mine-strapper/refs/heads/main/Config.schema.json"
+}
+```
+> [!NOTE]
+> The schema will help you fill out the file so it's recommended to use some kind of app that can read JSON schemas to edit the file easier. There are numerous required fields that you must fill out.
+
+8. Make an entry point file inside the `minestrapper` directory.
+
+**Example:**
+```python
+from pathlib import Path
+
+from minestrapper import Server
+
+if __name__ == "__main__":
+    server = Server(path=Path.cwd().parent)
+    server.start_server()
+
+    server.wait_loop()
+
+```
+
+## Important Notes
+- You still need to do any necessary port forwarding yourself.
 
 ## License
-MineStrapper is released under the MIT License.  
+MineStrapper is released under the [MIT License](./LICENSE).  
 Feel free to use, modify, and share.
