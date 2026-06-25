@@ -85,7 +85,7 @@ pip install minestrapper
 7. Create a file exactly named `Config.json` and edit to your liking.
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/Faizaan-J/mine-strapper/refs/heads/main/Config.schema.json"
+  "$schema": "https://faizaan-j.github.io/mine-strapper/schemas/Config.schema.json"
 }
 ```
 > [!NOTE]
