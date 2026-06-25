@@ -1,13 +1,16 @@
-# MineStrapper
-<p align="center">
-  <img width="150" height="150" alt="MineStrapperLogoPlaceholder" src="https://github.com/user-attachments/assets/38e8f391-5c0e-460a-9f05-ea9bc74ebf33" />
-</p>
-<p align="center">MineStrapper is a Python wrapper for running and extending features in a Minecraft <i>Java Edition</i> server.</p>
+<div align="center">
+    <img src="./assets/logo/minestrapper-logo.png" width="180" height="180" />
+    <h1>Minestrapper</h1>
+    <p>A bootstrapper for Minecraft Java Edition Servers
+</div>
 
-Instead of writing full Java plugins or mods, this lets you hook into the server’s state/lifecycle events (starting, running, idle, stopping, stopped) and add custom functionality directly in Python. 
-This means simple features you want to add don't require the overhead of a mod loader (fabric, forge) or a plugin loader (paper, spigot, bukkit) and you can keep the server in its vanilla form.
+## About
+Rather than building full Java plugins or mods, this project lets you tap into the server’s state and other lifecycle events, and add custom functionality directly in Python.
 
-Of course, you can still definitely use your favorite mods or plugins along with this if you'd like.
+That means small features can be added without the overhead of a mod loader (e.g. [Fabric](https://fabricmc.net/), [Forge](https://files.minecraftforge.net/net/minecraftforge/forge/)) or plugin loader (e.g. [Paper](https://papermc.io/), [Spigot](https://www.spigotmc.org/)), while keeping the server in its vanilla form.
+
+> [!NOTE] 
+> Feel free to still use your favorite mods or plugins alongside it if you want! Minestrapper mainly serves for smaller, simpler features.
 
 ## Current Features
 - Config Handling
