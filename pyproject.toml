@@ -1,9 +1,12 @@
 [project]
 name = "minestrapper"
-version="0.1.1"
+version="0.2.0"
 description="Minestrapper is a bootstrapper for Minecraft servers that lets you easily add custom features to your server without needing a full mod/plugin loader."
 authors = [
     { name = "Faizaan J" } 
+]
+dependencies = [
+    "prompt_toolkit>=3.0.0",
 ]
 requires-python= ">=3.9"
 

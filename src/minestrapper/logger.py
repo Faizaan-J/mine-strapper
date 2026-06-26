@@ -5,6 +5,9 @@ from enum import Enum
 from pathlib import Path
 from datetime import datetime
 
+from prompt_toolkit import print_formatted_text
+from prompt_toolkit.formatted_text import ANSI
+
 from typing import TYPE_CHECKING, Callable
 
 if TYPE_CHECKING:
@@ -45,7 +48,7 @@ class Logger:
         for transformer in self.line_transformers:
             message = transformer(message)
 
-        print(message)
+        print_formatted_text(ANSI(message))
 
     def forwarded_log(self, message: str):
         self.print_with_transformation(message)

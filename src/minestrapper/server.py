@@ -5,6 +5,10 @@ import threading
 
 import os
 
+from prompt_toolkit import PromptSession
+from prompt_toolkit.patch_stdout import patch_stdout
+from prompt_toolkit.output.color_depth import ColorDepth
+
 from .logger import Logger
 
 from .config_handler import ConfigHandler
@@ -21,11 +25,11 @@ class Server:
         self.path : str = (str(path) if isinstance(path, Path) else path)
         self.config_handler : ConfigHandler = ConfigHandler(self.path)
         self.state_handler : StateHandler = StateHandler(ServerState.STARTING)
-        self.periodic_callbacks : list[Callable] = []
         self.new_line_callbacks : list[Callable] = []
         self.server_process : subprocess.Popen | None = None
 
         self.logger = Logger(self)
+        self.session: PromptSession = PromptSession(color_depth=ColorDepth.TRUE_COLOR)
 
         os.chdir(self.path)
 
@@ -52,6 +56,7 @@ class Server:
 
         server_process = subprocess.Popen(
             full_command,
+            stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
@@ -65,17 +70,28 @@ class Server:
     def start_server(self):
         self.server_process = self.__start_server_process()
 
-        def loop():
-            while self.state_handler.get() != ServerState.STOPPED and self.server_process is not None and self.server_process.poll() is None:
-                self.__on_periodic()
-
-                if (self.periodic_callbacks):
-                    for callback in self.periodic_callbacks:
-                        callback()
-                wait(0.020)
+        def command_loop():
+            while True:
+                try:
+                    with patch_stdout():
+                        command = self.session.prompt("> ")
+                except (EOFError, KeyboardInterrupt):
+                    break
                 
-        self.periodic_thread = threading.Thread(target=loop, daemon=True)
-        self.periodic_thread.start()
+                if self.server_process is None:
+                    break
+
+                if self.server_process.poll() is not None:
+                    break
+
+                if self.server_process.stdin is None:
+                    break
+
+                self.server_process.stdin.write(command + "\n")
+                self.server_process.stdin.flush()
+                
+        self.command_thread = threading.Thread(target=command_loop, daemon=True)
+        self.command_thread.start()
 
         def output_loop():
             assert self.server_process is not None
@@ -89,15 +105,22 @@ class Server:
         self.logger.info("Server process started successfully.")
         handle_built_in_features(self)
     
+    def on_process_exit(self):
+        self.state_handler.set(ServerState.STOPPED)
+
+        self.output_thread.join()
+        self.session.app.exit()
+    
+        self.logger.info("Server process has stopped.")
+        self.logger.publish_minestrapper_log()
+        input("Press Enter to exit...")
+
     def wait_loop(self):
         assert self.server_process is not None
         self.server_process.wait()
 
         # If the server process has stopped, this code should now run.
-        self.state_handler.set(ServerState.STOPPED)
-        self.logger.info("Server process has stopped.")
-        self.logger.publish_minestrapper_log()
-        input("Press Enter to exit...")
+        self.on_process_exit()
 
     def __on_new_line(self, line : str):
         new_state = get_state_from_line(line)
@@ -112,13 +135,4 @@ class Server:
 
     def on_new_line(self, function: Callable):
         self.new_line_callbacks.append(function)
-        return function
-
-    def __on_periodic(self):
-        for callback in self.periodic_callbacks:
-            callback()
-
-    def on_periodic(self, function: Callable):
-        self.periodic_callbacks.append(function)
-
         return function
