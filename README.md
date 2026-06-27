@@ -1,5 +1,5 @@
 <div align="center">
-    <img src="./assets/logo/minestrapper-logo.png" width="180" height="180" />
+    <img src="https://raw.githubusercontent.com/Faizaan-J/mine-strapper/refs/heads/main/assets/logo/minestrapper-logo.png" width="180" height="180" />
     <h1>Minestrapper</h1>
     <p>A bootstrapper for Minecraft Java Edition Servers
 </div>
@@ -111,5 +111,5 @@ if __name__ == "__main__":
 - You still need to do any necessary port forwarding yourself.
 
 ## License
-MineStrapper is released under the [MIT License](./LICENSE).  
+MineStrapper is released under the [MIT License](https://github.com/Faizaan-J/mine-strapper/blob/main/LICENSE).  
 Feel free to use, modify, and share.
