@@ -9,6 +9,8 @@ from prompt_toolkit import PromptSession
 from prompt_toolkit.patch_stdout import patch_stdout
 from prompt_toolkit.output.color_depth import ColorDepth
 
+from minestrapper.util.shutdown_handler import ShutdownHandler
+
 from .logger import Logger
 
 from .config_handler import ConfigHandler
@@ -17,8 +19,6 @@ from .state_handler import ServerState, StateHandler
 from minestrapper.util.get_state_from_line import get_state_from_line
 
 from minestrapper.features.handle_built_in_features import handle_built_in_features
-
-from time import sleep as wait
 
 class Server:
     def __init__(self, path: str | Path):
@@ -30,6 +30,8 @@ class Server:
 
         self.logger = Logger(self)
         self.session: PromptSession = PromptSession(color_depth=ColorDepth.TRUE_COLOR)
+
+        self.shutdown_handler = ShutdownHandler(self)
 
         os.chdir(self.path)
 
@@ -54,6 +56,12 @@ class Server:
             "-jar", jar_path, "nogui"
         ])
 
+        os_specific = {}
+        if (os.name == "nt"):
+            os_specific["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP
+        else:
+            os_specific["start_new_session"] = True
+
         server_process = subprocess.Popen(
             full_command,
             stdin=subprocess.PIPE,
@@ -62,9 +70,11 @@ class Server:
             text=True,
             bufsize=1,
             encoding="utf-8",
-            errors="replace"
+            errors="replace",
+            **os_specific
         )
 
+        self.logger.info("Server process started successfully.")
         return server_process
 
     def start_server(self):
@@ -102,25 +112,49 @@ class Server:
         self.output_thread = threading.Thread(target=output_loop, daemon=True)
         self.output_thread.start()
 
-        self.logger.info("Server process started successfully.")
-        handle_built_in_features(self)
-    
-    def on_process_exit(self):
-        self.state_handler.set(ServerState.STOPPED)
+        def try_graceful_stop(self):
+            try:
+                if (self.server_process and self.server_process.stdin and self.server_process.poll() is None):
+                    self.server_process.stdin.write("stop\n")
+                    self.server_process.stdin.flush()
+                    return True
+            except:
+                pass
+            return False
 
-        self.output_thread.join()
-        self.session.app.exit()
-    
-        self.logger.info("Server process has stopped.")
-        self.logger.publish_minestrapper_log()
-        input("Press Enter to exit...")
+        @self.shutdown_handler.on_shutdown
+        def on_shutdown():
+            def after_server_stopped():
+                self.state_handler.set(ServerState.STOPPED)
+                self.output_thread.join(timeout=5)
+
+                if (self.session.app is not None and self.session.app.is_running):
+                    self.session.app.exit()
+                self.logger.publish_minestrapper_log()
+
+            self.state_handler.set(ServerState.STOPPING)
+            if (self.server_process is not None and self.server_process.stdin is not None and self.server_process.poll() is None):
+                try_graceful_stop(self)
+
+                self.server_process.wait(timeout=3)
+                after_server_stopped()
+            else:
+                after_server_stopped()
+
+        self.logger.info("Server started successfully.")
+        handle_built_in_features(self)
+
+        def detect_server_exit():
+            assert self.server_process is not None
+            self.server_process.wait()
+            self.logger.info("Server process has exited.")
+            self.shutdown_handler.request_shutdown()
+        
+        threading.Thread(target=detect_server_exit, daemon=True).start()
 
     def wait_loop(self):
-        assert self.server_process is not None
-        self.server_process.wait()
-
-        # If the server process has stopped, this code should now run.
-        self.on_process_exit()
+        self.shutdown_handler.wait_for_shutdown_complete()
+        input("Press Enter to exit...")
 
     def __on_new_line(self, line : str):
         new_state = get_state_from_line(line)
@@ -129,7 +163,7 @@ class Server:
 
         self.logger.forwarded_log(line)
 
-        if self.new_line_callbacks:
+        if (self.new_line_callbacks):
             for callback in self.new_line_callbacks:
                 callback(line)
 
