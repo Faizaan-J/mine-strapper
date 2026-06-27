@@ -54,10 +54,10 @@ class Logger:
         self.print_with_transformation(message)
         self.__write_line_log(message)
 
-    def log(self, level: LogLevel, message: str):
+    def log(self, level: LogLevel, *message: str):
         timestamp = f"[{datetime.now().strftime('%H:%M:%S')}]"
         log_level_label = f"[Minestrapper/{level.value}]:"
-        full_line = f"{timestamp} {log_level_label} {message}"
+        full_line = f"{timestamp} {log_level_label} {' '.join(message)}"
 
         self.print_with_transformation(full_line)
         self.__write_line_log(full_line)
@@ -68,12 +68,13 @@ class Logger:
         
         with open(self.log_file, "w", encoding="utf-8") as f:
             f.write(minestrapper_log_content)
+        self.info("Published Minestrapper log to latest.log.")
 
-    def info(self, message: str):
-        self.log(LogLevel.INFO, message)
+    def info(self, *message: str):
+        self.log(LogLevel.INFO, *message)
 
-    def warning(self, message: str):
-        self.log(LogLevel.WARNING, message)
+    def warning(self, *message: str):
+        self.log(LogLevel.WARNING, *message)
 
-    def error(self, message: str):
-        self.log(LogLevel.ERROR, message)
+    def error(self, *message: str):
+        self.log(LogLevel.ERROR, *message)
