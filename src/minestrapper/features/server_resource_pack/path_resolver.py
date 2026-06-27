@@ -15,12 +15,12 @@ def resolve_server_path(path_str: str, server_root: str | Path) -> Path:
     path = path.resolve()
 
     if (not path.exists()):
-        raise ValueError(f"Resource pack path {path} does not exist.")
+        raise ValueError(f"Resource pack path {path} does not exist")
     
     if (not path.is_file()):
-        raise ValueError(f"Resource pack path {path} is not a file.")
+        raise ValueError(f"Resource pack path {path} is not a file")
     
     if (path.suffix.lower() != ".zip"):
-        raise ValueError(f"Resource pack path {path} is not a zip file.")
+        raise ValueError(f"Resource pack path {path} is not a zip file")
     
     return path

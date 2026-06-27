@@ -82,6 +82,6 @@ class ServerResourcePack(Feature):
         self.resource_pack_server = self.start_resource_pack_server()
         resource_pack_url = f"http://{self.ip}:{self.port}/"
 
-        self.server.logger.info(f"Started resource pack server at {resource_pack_url}.")
+        self.server.logger.info(f"Started resource pack server at {resource_pack_url}")
         self.server.config_handler.set_server_properties("resource-pack", resource_pack_url)
         self.server.config_handler.set_server_properties("resource-pack-sha1", self.get_sha1(self.path))

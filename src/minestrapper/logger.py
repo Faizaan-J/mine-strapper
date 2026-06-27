@@ -34,7 +34,7 @@ class Logger:
         with open(self.minestrapper_log_file, "w", encoding="utf-8") as log:
             log.write("")
 
-        self.info("Initialized Minestrapper Logger successfully.")
+        self.info("Initialized Minestrapper Logger successfully")
 
     def add_line_transformer(self, transformer: Callable[[str], str]):
         self.line_transformers.append(transformer)
@@ -68,7 +68,7 @@ class Logger:
         
         with open(self.log_file, "w", encoding="utf-8") as f:
             f.write(minestrapper_log_content)
-        self.info("Published Minestrapper log to latest.log.")
+        self.info("Published Minestrapper log to latest.log")
 
     def info(self, *message: str):
         self.log(LogLevel.INFO, *message)

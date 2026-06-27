@@ -32,6 +32,6 @@ def handle_built_in_features(server: "Server"):
                 feature_instance = feature_class(server)
                 feature_name = feature_instance.name
                 feature_instance.run()
-                server.logger.info(f"Feature '{feature_instance.name}' has been started.")
+                server.logger.info(f"Feature '{feature_instance.name}' has been started")
             except Exception as e:
                 server.logger.error(f"An error occurred while running the feature '{feature_name}': {e}")

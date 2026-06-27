@@ -42,7 +42,7 @@ class ShutdownHandler:
                     if (ctrl_type == CTRL_CLOSE_EVENT):
                         self.server.logger.warning(
                             "Terminal window is being closed directly. The Minecraft Server process may not be terminated properly.", 
-                            "Please use the 'stop' command, use Ctrl + C, or some other safer method to stop the server gracefully."
+                            "Please use the 'stop' command, use Ctrl + C, or some other safer method to stop the server gracefully"
                         )
 
                     self.__call_all()
@@ -60,7 +60,7 @@ class ShutdownHandler:
         with (self.__lock):
             if (self.__shutdown_initiated):
                 return
-            self.server.logger.info("Shutdown initiated.")
+            self.server.logger.info("Shutdown initiated")
             self.__shutdown_initiated = True
         
         if (self.shutdown_callbacks):
@@ -69,7 +69,7 @@ class ShutdownHandler:
                     callback()
                 except Exception:
                     self.server.logger.error(f"Error while executing shutdown callback: {traceback.format_exc()}")
-        self.server.logger.info("Shutdown cleanup processes complete.")
+        self.server.logger.info("Shutdown cleanup processes complete")
         self.__shutdown_complete = True
 
     def on_shutdown(self, callback: Callable):

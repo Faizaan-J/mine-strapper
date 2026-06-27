@@ -31,7 +31,7 @@ class StateHandler:
                 function()
 
         if (state is not None and not isinstance(state, ServerState)):
-            raise NameError(f"State {state} is not a valid server state.")
+            raise NameError(f"State {state} is not a valid server state")
 
         if state not in self.state_callbacks:
             self.state_callbacks[state] = []

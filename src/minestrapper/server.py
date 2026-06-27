@@ -74,7 +74,7 @@ class Server:
             **os_specific
         )
 
-        self.logger.info("Server process started successfully.")
+        self.logger.info("Server process started successfully")
         return server_process
 
     def start_server(self):
@@ -141,13 +141,13 @@ class Server:
             else:
                 after_server_stopped()
 
-        self.logger.info("Server started successfully.")
+        self.logger.info("Server started successfully")
         handle_built_in_features(self)
 
         def detect_server_exit():
             assert self.server_process is not None
             self.server_process.wait()
-            self.logger.info("Server process has exited.")
+            self.logger.info("Server process has exited")
             self.shutdown_handler.request_shutdown()
         
         threading.Thread(target=detect_server_exit, daemon=True).start()

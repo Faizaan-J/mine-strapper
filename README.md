@@ -28,7 +28,7 @@ That means small features can be added without the overhead of a mod loader (e.g
   - A lifecycle function that runs everytime a new line is sent from the Minecraft Server process
 - Logger
   - Prints out stuff both from forwarding logs from the Minecraft process and also custom logs from Minestrapper.
-  - Keeps Minestrapper specific logs visually consistent with Minecraft Server logs (e.g. "[19:48:06] [Minestrapper/INFO]: Initialized Minestrapper Logger successfully.")
+  - Keeps Minestrapper specific logs visually consistent with Minecraft Server logs (e.g. "[19:48:06] [Minestrapper/INFO]: Initialized Minestrapper Logger successfully")
   - Logs to a file named `latest-minestrapper.log` and then replaces the vanilla `latest.log` with it when the server stops.
   - Provides `transformers` to modify each logged line to the output as needed. 
 - Built-in features:
