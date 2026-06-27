@@ -1,6 +1,6 @@
 [project]
 name = "minestrapper"
-version="0.3.3"
+version="0.3.4"
 description="Minestrapper is a bootstrapper for Minecraft servers that lets you easily add custom features to your server without needing a full mod/plugin loader."
 readme = "README.md"
 authors = [

@@ -109,6 +109,7 @@ if __name__ == "__main__":
 
 ## Important Notes
 - You still need to do any necessary port forwarding yourself.
+- Minestrapper has only been tested on modern versions of Minecraft. However, the estimated minimum version that this should work is Java Edition 1.7.2
 
 ## License
 MineStrapper is released under the [MIT License](https://github.com/Faizaan-J/mine-strapper/blob/main/LICENSE).  
