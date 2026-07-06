@@ -1,6 +1,11 @@
+from typing import TYPE_CHECKING
+
 import os
 import json
 from enum import Enum
+
+if TYPE_CHECKING:
+    from .server import Server
 
 class FileType(Enum):
     CONFIG = "config"
@@ -16,17 +21,11 @@ def key_value_to_dict(unpacked_string: list) -> dict:
 
     return dict
 
-def dict_to_key_value(dictionary: dict) -> str:
-    key_value_string = ""
-    for key, value in dictionary.items():
-        key_value_string += f"{key}={value}\n"
-    return key_value_string
-
 class ConfigHandler:
-    def __init__(self, path: str):
-        self.path = path
-        self.config_json = os.path.join(self.path, "minestrapper", "config.json")
-        self.server_properties_file = os.path.join(self.path, "server.properties")
+    def __init__(self, server: "Server"):
+        self.server = server
+        self.config_json = os.path.join(server.path, "minestrapper", "config.json")
+        self.server_properties_file = os.path.join(server.path, "server.properties")
 
     def __open(self, file_type: FileType):
         if file_type == FileType.CONFIG:
@@ -46,5 +45,28 @@ class ConfigHandler:
     def set_server_properties(self, key : str, value : str):
         self.__open(FileType.SERVER_PROPERTIES)
         self.__server_properties[key] = value
-        with open(self.server_properties_file, 'w') as f:            
-            f.write(dict_to_key_value(self.__server_properties))
+        
+        with open(self.server_properties_file, "r", encoding="utf-8") as f:
+            lines = f.readlines()
+
+        key_found = False
+        for index, line in enumerate(lines):
+            line = line.strip()
+
+            if (line.startswith("#") or "=" not in line):
+                continue
+            
+            current_key, _ = line.split("=", 1)
+
+            if (current_key == key):
+                key_found = True
+                lines[index] = f"{key}={value}\n"
+                break
+            
+        if (not key_found):
+            new_line = f"{key}={value}"
+            lines.append(f"{new_line}\n")
+            self.server.logger.warning(f"Property '{key}' not found in server.properties. Appended line: '{new_line}'")
+
+        with open(self.server_properties_file, "w", encoding="utf-8") as f:
+            f.writelines(lines)

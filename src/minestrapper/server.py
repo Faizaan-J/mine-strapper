@@ -23,7 +23,7 @@ from minestrapper.features.handle_built_in_features import handle_built_in_featu
 class Server:
     def __init__(self, path: str | Path):
         self.path : str = (str(path) if isinstance(path, Path) else path)
-        self.config_handler : ConfigHandler = ConfigHandler(self.path)
+        self.config_handler : ConfigHandler = ConfigHandler(self)
         self.state_handler : StateHandler = StateHandler(ServerState.STARTING)
         self.new_line_callbacks : list[Callable] = []
         self.server_process : subprocess.Popen | None = None
