@@ -89,6 +89,8 @@ pip install minestrapper
 
 8. Make an entry point file inside the `minestrapper` directory.
 
+`main.py`
+
 **Example:**
 ```python
 from pathlib import Path
@@ -101,6 +103,36 @@ if __name__ == "__main__":
 
     server.wait_loop()
 
+```
+
+### Optional:
+Create an executable script to facilitate starting the server.
+
+**Windows:**
+
+Place `start.bat` in the root of the Minecraft Server
+```
+@echo off
+
+cd minestrapper
+call .\.venv\Scripts\Activate
+python main.py
+```
+
+**MacOS / Linux:**
+
+1. Place `start.sh` in the root of the Minecraft Server
+```
+#!/bin/bash
+
+cd minestrapper
+source .venv/bin/activate
+python main.py
+```
+
+2. Open the terminal in the same directory and make the shell script executable.
+```
+chmod +x start.sh
 ```
 
 ## Important Notes
