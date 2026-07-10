@@ -18,15 +18,20 @@
       "properties": {
         "min_ram": {
           "type": "string",
-          "description": "Minimum JVM memory allocation."
+          "description": "Minimum JVM memory allocation.",
+          "default": "1G",
+          "x-placeholder": "e.g. 512M, 1G, 2G"
         },
         "max_ram": {
           "type": "string",
-          "description": "Maximum JVM memory allocation."
+          "description": "Maximum JVM memory allocation.",
+          "default": "2G",
+          "x-placeholder": "e.g. 512M, 1G, 2G"
         },
         "jar_name": {
           "type": "string",
-          "description": "Server .jar file name without extension."
+          "description": "Server .jar file name without extension.",
+          "x-placeholder": "Server Name Here.jar"
         },
         "other_args": {
           "type": "array",
@@ -65,7 +70,8 @@
       "properties": {
         "title": {
           "type": "string",
-          "description": "Display title for this state."
+          "description": "Display title for this state.",
+          "x-placeholder": "e.g. Starting, Running, Stopping"
         },
         "color": {
           "type": "string",
@@ -163,17 +169,21 @@
         },
         "path": {
           "type": "string",
-          "description": "Path to the resource pack ZIP file relative to the server directory."
+          "description": "Path to the resource pack ZIP file relative to the server directory.",
+          "x-placeholder": "e.g. resourcepacks/my_pack.zip"
         },
         "ip": {
           "type": "string",
-          "description": "IP address used to host the resource pack. If empty, it defaults to 0.0.0.0."
+          "description": "IP address used to host the resource pack. If empty, it defaults to 0.0.0.0.",
+          "default": "0.0.0.0"
         },
         "port": {
           "type": "integer",
           "minimum": 1,
           "maximum": 65535,
-          "description": "Port used to host the resource pack."
+          "description": "Port used to host the resource pack.",
+          "default": 6940,
+          "x-placeholder": "e.g. 2601"
         }
       },
       "if": {
