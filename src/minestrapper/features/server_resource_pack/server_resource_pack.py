@@ -19,6 +19,8 @@ from .address_validator import get_clean_address
 
 import hashlib
 
+from .get_public_ip import get_public_ip
+
 class ServerResourcePack(Feature):
     def __init__(self, server: "Server"):
         super().__init__(
@@ -81,6 +83,10 @@ class ServerResourcePack(Feature):
     def run(self):
         self.resource_pack_server = self.start_resource_pack_server()
         resource_pack_url = f"http://{self.ip}:{self.port}/"
+
+        if (self.ip == "0.0.0.0"):
+            public_ip = get_public_ip()
+            resource_pack_url = f"http://{public_ip}:{self.port}/"
 
         self.server.logger.info(f"Started resource pack server at {resource_pack_url}")
         self.server.config_handler.set_server_properties("resource-pack", resource_pack_url)
