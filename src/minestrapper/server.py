@@ -33,6 +33,8 @@ class Server:
 
         self.shutdown_handler = ShutdownHandler(self)
 
+        self.__stdin_lock = threading.Lock()
+
         os.chdir(self.path)
 
     def __start_server_process(self):
@@ -97,8 +99,7 @@ class Server:
                 if self.server_process.stdin is None:
                     break
 
-                self.server_process.stdin.write(command + "\n")
-                self.server_process.stdin.flush()
+                self.send_command(command)
                 
         self.command_thread = threading.Thread(target=command_loop, daemon=True)
         self.command_thread.start()
@@ -115,10 +116,10 @@ class Server:
         def try_graceful_stop(self):
             try:
                 if (self.server_process and self.server_process.stdin and self.server_process.poll() is None):
-                    self.server_process.stdin.write("stop\n")
-                    self.server_process.stdin.flush()
+                    self.send_command("stop")
                     return True
-            except:
+            except Exception as e:
+                self.logger.error("Failed to send stop command to server: " + str(e))
                 pass
             return False
 
@@ -170,3 +171,15 @@ class Server:
     def on_new_line(self, function: Callable):
         self.new_line_callbacks.append(function)
         return function
+
+    def send_command(self, command: str):
+        if (self.server_process is None or self.server_process.stdin is None or self.server_process.poll() is not None):
+            self.logger.warning("Cannot send command, server process is not running")
+            return
+
+        with self.__stdin_lock:
+            try:
+                self.server_process.stdin.write(command.strip() + "\n")
+                self.server_process.stdin.flush()
+            except Exception as e:
+                self.logger.error("Failed to send command to server: " + str(e))
