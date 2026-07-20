@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="/src/WindowChrome.css" />
+    <title>Minestrapper Settings</title>
+  </head>
+
+  <body>
+
+    <!--WINDOW CHROME-->
+    <div data-tauri-drag-region class="windowChrome">
+        <div class="windowTitle">
+            <img data-tauri-drag-region class="svgIcon dontInvert" alt="Minestrapper Logo" src="/icon.png" />
+            <img data-tauri-drag-region class="svgIcon" alt="Settings Cog Icon" src="/windowchrome/SettingsCog.svg" />
+            <span data-tauri-drag-region>Minestrapper Settings</span>
+        </div>
+
+        <div class="windowControls">
+          <button class="windowControlButton minimize">
+            <img alt="Minimize Window" src="/windowchrome/MinimizeButton.svg" />
+          </button>
+          <button class="windowControlButton fullscreen" id="snap-btn">
+            <img alt="Fullscreen Window" src="/windowchrome/FullscreenButton.svg" />
+          </button>
+          <button class="windowControlButton close">
+            <img alt="Close Window" src="/windowchrome/CloseButton.svg" />
+          </button>
+        </div>
+    </div>
+    <!--WINDOW CHROME END-->
+
+    <!--REACT MOUNTING POINT-->
+    <div id="root"></div>
+
+    
+    <script type="module" src="/src/util/WindowChrome.ts"></script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

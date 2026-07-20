@@ -1,0 +1,71 @@
+:root {
+  --window-chrome-height: 2rem; 
+}
+
+.windowChrome {
+    width: 100%;
+    height: var(--window-chrome-height);
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-left: 0.5rem;
+    background-color: var(--background-color);
+
+    user-select: none;
+
+    border-bottom: 2px solid var(--background-hover-color);
+}
+
+:root[data-theme="dark"] .windowChrome img:not(.dontInvert) {
+    filter: invert(1);
+}
+
+.fullscreen > img {
+    scale: 0.8;
+}
+
+.svgIcon {
+    height: 100%;
+    aspect-ratio: 1/1;
+    padding: 0.1rem;
+}
+
+.windowTitle {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    height: 70%;
+}
+
+.windowControls {
+    display: flex;
+    flex-direction: row;
+}
+
+
+.windowControlButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    transition: background-color 167ms cubic-bezier(0, 0, 0, 1);
+}
+
+.windowControlButton:hover {
+    background-color: var(--background-hover-color);
+}
+
+#snap-btn.is-hovered {
+    background-color: var(--background-hover-color);
+}
+
+.windowControlButton.close:hover {
+    background-color: red;
+}
+
+.windowControlButton > img {
+    height: 100%;
+    aspect-ratio: 1/1;
+}

@@ -1,23 +1,45 @@
+#** ***************************************************
+#** 
+#**  CONSOLIDATED GITIGINORE FOR MINESTRAPPER MONO REPO
+#** 
+#** ***************************************************
+
+#** ******************************************
+#**  GITIGNORE FOR GENERAL FILES
+#** ******************************************
+
+# Environments
+.env
+.envrc
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Editor / IDE settings
+.vscode/
+.idea/
+.spyderproject
+.spyproject
+/.vs
+*.sublime*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+#** ******************************************
+#**  GITIGNORE FOR CORE MINESTRAPPER (PYTHON)
+#** ******************************************
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
-*$py.class
-
-# C extensions
-*.so
-
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-# Consolidated .gitignore for this Python project
-
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
 *$py.class
 
 # C extensions
@@ -127,22 +149,6 @@ activemq-data/
 # SageMath
 *.sage.py
 
-# Environments
-.env
-.envrc
-.venv/
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Editor / IDE settings
-.vscode/
-.idea/
-.spyderproject
-.spyproject
-
 # Misc project files
 .ropeproject
 /site
@@ -174,52 +180,47 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# Build artifacts (consolidated)
-build/
-dist/
-*.egg-info/
-.eggs/
+#** ******************************************
+#**  GITIGNORE FOR SETTINGS PANEL (NODE + RUST + TAURI)
+#** ******************************************
 
-# Coverage (consolidated)
-.coverage
-.coverage.*
-htmlcov/
+# dependency directories
+node_modules/
 
-# Test caches (consolidated)
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
+# Optional npm and yarn cache directory
+.npm/
+.yarn/
 
-# OS files
-.DS_Store
-Thumbs.db
+# Output of 'npm pack'
+*.tgz
 
-# Logs
-*.log
-dist/
-*.egg-info/
-.eggs/
+# npm, yarn and bun lock files
+package-lock.json
+yarn.lock
+bun.lockb
 
-# Wheels
-*.whl
+# rust compiled folders
+target/
 
-# Coverage
-.coverage
-.coverage.*
-htmlcov/
+# examples /gen directory
+/examples/**/src-tauri/gen/
+/bench/**/src-tauri/gen/
 
-# Test caches
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
+# logs
+logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+debug.log
 
-# IDEs
-.vscode/
-.idea/
+# runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
 
-# OS files
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
+# miscellaneous
+TODO.md
+dist
+dist-ssr
+*.local
