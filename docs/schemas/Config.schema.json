@@ -63,6 +63,7 @@
   "$defs": {
     "style": {
       "type": "object",
+      "x-accordion": true,
       "required": [
         "title",
         "color"
